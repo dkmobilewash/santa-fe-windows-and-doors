@@ -31,7 +31,7 @@ shared partials, one config file for business details, and a Vercel serverless f
   - `robots: noindex` → hides the page from search and the sitemap (used on `/thank-you/`)
 - **Structured data:** `build.js` generates `HomeAndConstructionBusiness` JSON-LD from `site.config.json` (address, phone, `areaServed`).
   `openingHours` is only published once you fill it in (e.g. `"Mo-Fr 08:00-17:00"`).
-- **Styles:** `assets/css/styles.css`. Colors are CSS variables at the top (Santa Fe blue, adobe/sand, terracotta, turquoise, cream).
+- **Styles:** `assets/css/styles.css`. Colors are CSS variables at the top: lime plaster, adobe, earth ink, Santa Fe blue, night blue and a single chamisa-yellow accent. Headings use Marcellus, body text Source Sans 3. The recurring motif is the arch-topped, deep-set opening around illustrations.
 - **Images:** `assets/img/` holds hand-made SVGs (logo, favicon, window/door illustrations, icons). Swap in real project photos when you have them.
 
 ## Placeholders to replace before launch
