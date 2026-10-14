@@ -1,0 +1,59 @@
+<form class="lead-form" name="free-estimate" method="POST" action="/api/lead">
+  <input type="hidden" name="form_name" value="Free in-home estimate">
+  <p class="visually-hidden" aria-hidden="true"><label>Leave blank: <input name="company" tabindex="-1" autocomplete="off"></label></p>
+  <h3 class="lead-form__title">Book your free in-home estimate</h3>
+  <p class="lead-form__sub">Consultation &amp; measurement at your home. No obligation.</p>
+  <div class="form-row">
+    <label>First name<input type="text" name="first_name" autocomplete="given-name" required></label>
+    <label>Last name<input type="text" name="last_name" autocomplete="family-name" required></label>
+  </div>
+  <div class="form-row">
+    <label>Phone<input type="tel" name="phone" autocomplete="tel" required></label>
+    <label>ZIP code<input type="text" name="zip" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" autocomplete="postal-code" required></label>
+  </div>
+  <label>Email<input type="email" name="email" autocomplete="email"></label>
+  <div class="form-row">
+    <label>Project type
+      <select name="project_type">
+        <option>Windows</option>
+        <option>Entry door</option>
+        <option>Patio or sliding door</option>
+        <option>Both</option>
+        <option>Not sure</option>
+      </select>
+    </label>
+    <label>Approx. openings
+      <select name="openings">
+        <option>1</option>
+        <option>2–4</option>
+        <option>5–9</option>
+        <option>10–19</option>
+        <option>20+</option>
+        <option>Not sure</option>
+      </select>
+    </label>
+  </div>
+  <div class="form-row">
+    <label>Timeframe
+      <select name="timeframe">
+        <option>ASAP</option>
+        <option>1–3 months</option>
+        <option>3–6 months</option>
+        <option>Just researching</option>
+      </select>
+    </label>
+    <label>Is your home in a historic district?
+      <select name="historic_district">
+        <option>Not sure</option>
+        <option>Yes</option>
+        <option>No</option>
+      </select>
+    </label>
+  </div>
+  <label><span>Tell us about your project <span class="optional">(optional)</span></span>
+    <textarea name="message" rows="3" placeholder="Drafty windows, a stuck slider, a new front door, deep adobe openings..."></textarea>
+  </label>
+  <button class="btn btn--primary btn--block btn--lg" type="submit">Request My Free Estimate</button>
+  <p class="lead-form__error" role="alert" hidden>Sorry, something went wrong sending your request. Please call us at <a href="tel:{{phoneHref}}">{{phone}}</a>.</p>
+  <p class="lead-form__fine">No obligation. We'll never share your info.</p>
+</form>
