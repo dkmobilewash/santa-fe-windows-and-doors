@@ -97,13 +97,48 @@ const urls = [];
 const unresolved = [];
 let pageCount = 0;
 
-for (const file of fs.readdirSync(pagesDir).filter((f) => f.endsWith('.html'))) {
-  const slug = file.replace(/\.html$/, '');
-  const url = slug === 'index' ? '/' : `/${slug}/`;
-  const canonical = base + url;
-  const { meta, body } = parsePage(fs.readFileSync(path.join(pagesDir, file), 'utf8'));
+// Pages can be nested: src/pages/about.html → /about/,
+// src/pages/service-areas/santa-fe-nm.html → /service-areas/santa-fe-nm/,
+// src/pages/service-areas/santa-fe-nm/eldorado.html → /service-areas/santa-fe-nm/eldorado/
+function listPages(dir, prefix = '') {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+    e.isDirectory()
+      ? listPages(path.join(dir, e.name), `${prefix}${e.name}/`)
+      : e.name.endsWith('.html') ? [`${prefix}${e.name}`] : []
+  );
+}
 
-  const content = fill(include(body), vars);
+const pages = listPages(pagesDir).map((file) => {
+  const slug = file.replace(/\.html$/, '').replace(/(^|\/)index$/, '');
+  const url = slug ? `/${slug}/` : '/';
+  return { file, slug, url, ...parsePage(fs.readFileSync(path.join(pagesDir, file), 'utf8')) };
+});
+const byUrl = Object.fromEntries(pages.map((p) => [p.url, p]));
+const crumbName = (p) => fill(p.meta.crumb || p.meta.title || p.slug, vars);
+
+// Home → each parent page that exists → this page
+function trail(url) {
+  const out = [{ name: 'Home', url: '/' }];
+  const parts = url.split('/').filter(Boolean);
+  for (let i = 1; i <= parts.length; i++) {
+    const u = `/${parts.slice(0, i).join('/')}/`;
+    if (byUrl[u]) out.push({ name: crumbName(byUrl[u]), url: u });
+  }
+  return out;
+}
+
+// <!-- @breadcrumbs --> renders the trail as a visible nav
+function breadcrumbsHtml(url) {
+  const t = trail(url);
+  return `<nav class="breadcrumbs" aria-label="Breadcrumb"><ol>${t
+    .map((c, i) => (i === t.length - 1 ? `<li><span aria-current="page">${c.name}</span></li>` : `<li><a href="${c.url}">${c.name}</a></li>`))
+    .join('')}</ol></nav>`;
+}
+
+for (const { file, slug, url, meta, body } of pages) {
+  const canonical = base + url;
+
+  const content = fill(include(body.replace(/<!--\s*@breadcrumbs\s*-->/g, breadcrumbsHtml(url))), vars);
 
   // Structured data: business on every page, breadcrumbs on inner pages, FAQPage where asked.
   const schemas = [business];
@@ -111,10 +146,7 @@ for (const file of fs.readdirSync(pagesDir).filter((f) => f.endsWith('.html'))) 
     schemas.push({
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: base + '/' },
-        { '@type': 'ListItem', position: 2, name: fill(meta.crumb || meta.title || slug, vars), item: canonical },
-      ],
+      itemListElement: trail(url).map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: base + c.url })),
     });
   }
   if (meta.schema === 'faq') {
@@ -153,7 +185,7 @@ for (const file of fs.readdirSync(pagesDir).filter((f) => f.endsWith('.html'))) 
   const left = html.match(/\{\{[^}]*\}\}/g);
   if (left) unresolved.push(`${file}: ${[...new Set(left)].join(', ')}`);
 
-  const outDir = slug === 'index' ? DIST : path.join(DIST, slug);
+  const outDir = slug ? path.join(DIST, slug) : DIST;
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, 'index.html'), html);
   pageCount++;

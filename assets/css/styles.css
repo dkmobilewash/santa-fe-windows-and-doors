@@ -270,6 +270,22 @@ p { margin: 0 0 1em; }
 /* ---------- Page hero ---------- */
 .page-hero { position: relative; background: linear-gradient(165deg, #dfeaf5 0%, var(--cream) 100%); padding: 4.5rem 0; overflow: hidden; }
 .page-hero--center { text-align: center; }
+.page-hero--crumbs { padding-top: 1.75rem; }
+.page-hero--crumbs .hero__inner { margin-top: 2rem; }
+
+/* ---------- Breadcrumbs ---------- */
+.breadcrumbs ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .25rem .5rem; font-size: .88rem; color: var(--muted); }
+.breadcrumbs li + li::before { content: '/'; margin-right: .5rem; color: var(--adobe); }
+.breadcrumbs a { color: var(--blue); text-decoration: none; font-weight: 600; }
+.breadcrumbs a:hover { text-decoration: underline; }
+
+/* ---------- Neighborhood link cards ---------- */
+.area-card { display: flex; flex-direction: column; gap: .4rem; background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--adobe); border-radius: var(--radius); padding: 1.5rem; text-decoration: none; color: var(--ink); transition: box-shadow .2s, transform .2s; }
+.area-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); color: var(--ink); }
+.area-card h3 { margin: 0; }
+.area-card p { color: var(--muted); margin: 0; flex: 1; }
+.area-card__more { font-weight: 700; color: var(--blue); font-size: .92rem; }
+.area .more { display: inline-block; margin-top: .3rem; font-weight: 700; font-size: .9rem; text-decoration: none; }
 .page-hero--center .page-hero__lead { margin-inline: auto; }
 .page-hero--tall { padding: 7rem 0; }
 .page-hero__inner { display: grid; grid-template-columns: 1fr auto; gap: 3rem; align-items: center; }
@@ -293,7 +309,7 @@ p { margin: 0 0 1em; }
 .site-footer { background: var(--blue-deep); color: #b4c3d6; position: relative; padding-top: 4rem; margin-top: 60px; }
 .footer-mountains { position: absolute; top: -59px; left: 0; width: 100%; height: 60px; }
 .footer-mountains path { fill: var(--blue-deep); }
-.footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.3fr; gap: 2.5rem; padding: 2rem 0 3rem; }
+.footer-grid { display: grid; grid-template-columns: 1.5fr 1.1fr .9fr 1fr 1.3fr; gap: 2rem; padding: 2rem 0 3rem; }
 .site-footer h3 { color: #fff; font-size: 1rem; text-transform: uppercase; letter-spacing: .08em; }
 .site-footer ul { list-style: none; padding: 0; margin: 0 0 1.25rem; }
 .site-footer li { margin-bottom: .55rem; }
@@ -342,6 +358,7 @@ p { margin: 0 0 1em; }
   .packages { gap: 2rem; }
   .cta-band__actions { justify-content: flex-start; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-brand { grid-column: 1 / -1; }
 }
 @media (max-width: 560px) {
   body { font-size: 16px; }

@@ -17,14 +17,16 @@ shared partials, one config file for business details, and a Vercel serverless f
 | `/free-estimate/` | Booking form |
 | `/service-areas/` | Santa Fe, Santa Fe County, Los Alamos County, Española & Pojoaque, Glorieta & Pecos (each area has an `id` anchor) |
 | `/reviews/`, `/about/`, `/faq/`, `/financing/`, `/contact/`, `/thank-you/` | |
+| `/service-areas/santa-fe-nm/` | `src/pages/service-areas/santa-fe-nm.html`: Santa Fe hub page linking to the neighborhood pages |
+| `/service-areas/santa-fe-nm/historic-eastside/`, `/las-campanas/`, `/south-capitol/`, `/eldorado/`, `/tesuque/` | `src/pages/service-areas/santa-fe-nm/*.html`: neighborhood pages with estimate form, local considerations, FAQ and nearby-area links |
 
 ## Editing
 - **Business info & prices:** `site.config.json`. Every placeholder value lives here, so you can replace them all in one place.
 - **Shared header, footer, product lines, form, CTA:** `src/partials/`. Pages pull them in with markers:
   `<!-- @estimate-form -->`, `<!-- @packages -->`, `<!-- @cta -->` (any `src/partials/<name>.html` works as `<!-- @name -->`).
-- **Page content:** `src/pages/*.html`. The comment at the top of each page sets:
+- **Page content:** `src/pages/**/*.html`. Folders become URL paths: `src/pages/service-areas/santa-fe-nm/eldorado.html` → `/service-areas/santa-fe-nm/eldorado/`. The comment at the top of each page sets:
   - `title:` and `description:` → `<title>` and meta description (use `{{tokens}}` freely)
-  - `crumb:` → the page name in the BreadcrumbList schema
+  - `crumb:` → the page name in breadcrumbs. Breadcrumbs follow the URL (Home › Service Areas › Santa Fe, NM › Eldorado) in the schema, and `<!-- @breadcrumbs -->` shows them on the page
   - `schema: faq` → builds FAQPage schema from the page's `<details><summary>` questions
   - `robots: noindex` → hides the page from search and the sitemap (used on `/thank-you/`)
 - **Structured data:** `build.js` generates `HomeAndConstructionBusiness` JSON-LD from `site.config.json` (address, phone, `areaServed`).
@@ -45,6 +47,7 @@ Search the repo for `PLACEHOLDER` to find every spot. In summary:
 | Domain (`https://www.santafewindowsanddoors.com`) | `site.config.json` (used for canonical URLs, sitemap, schema) |
 | **Prices are placeholders** (`$XXX`, `$X,XXX`, `$XX/mo`): vinyl, fiberglass, wood-clad, entry door, patio door, financing | `site.config.json` → `price` |
 | Warranty terms (wording is generic on purpose) | trust strip in `index.html`, `packages.html`, `products-pricing.html`, `faq.html` |
+| Project photos for each neighborhood page (dashed placeholder box) | `src/pages/service-areas/santa-fe-nm/*.html` |
 | Reviews (dashed "Placeholder" cards; no star ratings) | `index.html`, `reviews.html`, plus your Google review link in `reviews.html` |
 | Owner story and team photo | `about.html` |
 | Financing partner, link and disclosures | `financing.html` |
