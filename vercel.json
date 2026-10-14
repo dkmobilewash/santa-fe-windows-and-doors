@@ -1,5 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "node build.js",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/service-areas/santa-fe-nm", "destination": "/santa-fe-nm/", "permanent": true },
+    { "source": "/service-areas/santa-fe-nm/:slug", "destination": "/santa-fe-nm/:slug/", "permanent": true }
+  ]
 }

@@ -98,8 +98,8 @@ const unresolved = [];
 let pageCount = 0;
 
 // Pages can be nested: src/pages/about.html → /about/,
-// src/pages/service-areas/santa-fe-nm.html → /service-areas/santa-fe-nm/,
-// src/pages/service-areas/santa-fe-nm/eldorado.html → /service-areas/santa-fe-nm/eldorado/
+// src/pages/santa-fe-nm.html → /santa-fe-nm/,
+// src/pages/santa-fe-nm/eldorado.html → /santa-fe-nm/eldorado/
 function listPages(dir, prefix = '') {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
     e.isDirectory()
