@@ -1,0 +1,11 @@
+{
+  "name": "santa-fe-windows-and-doors",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Website for a Santa Fe, NM window and door replacement business",
+  "scripts": {
+    "build": "node build.js",
+    "start": "node build.js && npx --yes serve dist -l 3000",
+    "test": "node --test"
+  }
+}

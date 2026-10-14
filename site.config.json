@@ -1,0 +1,31 @@
+{
+  "_note": "Business details used across the whole site. Fields listed in _placeholders are NOT real yet: replace them, then run `npm run build`.",
+  "_placeholders": ["phone", "phoneHref", "email", "hours", "openingHours", "license", "yearFounded", "domain", "price.*"],
+  "name": "Santa Fe Windows and Doors",
+  "shortName": "SF Windows & Doors",
+  "tagline": "Locally owned window and door replacement in Santa Fe, New Mexico",
+  "phone": "(505) 555-0123",
+  "phoneHref": "+15055550123",
+  "email": "hello@santafewindowsanddoors.com",
+  "address": "1570 Pacheco St, Suite D6",
+  "city": "Santa Fe",
+  "state": "NM",
+  "zip": "87505",
+  "hours": "Hours coming soon — call to schedule",
+  "openingHours": "",
+  "license": "NM License #000000",
+  "yearFounded": "20XX",
+  "domain": "https://www.santafewindowsanddoors.com",
+  "price": {
+    "vinyl": "$XXX",
+    "fiberglass": "$X,XXX",
+    "woodClad": "$X,XXX",
+    "entryDoor": "$X,XXX",
+    "patioDoor": "$X,XXX",
+    "financing": "$XX/mo"
+  },
+  "areaServed": [
+    "Santa Fe", "Eldorado at Santa Fe", "Tesuque", "La Cienega", "Agua Fria", "Cerrillos", "Madrid",
+    "Galisteo", "Lamy", "Edgewood", "Los Alamos", "White Rock", "Española", "Pojoaque", "Glorieta", "Pecos"
+  ]
+}
