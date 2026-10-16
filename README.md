@@ -65,7 +65,7 @@ No dependencies.
 ## Deploying on Vercel
 1. Import this repo in Vercel. `vercel.json` already sets the build command (`node build.js`) and output folder (`dist`).
    Don't add `trailingSlash` to `vercel.json`: it redirects POSTs to `/api/lead` and breaks the form.
-   `vercel.json` also 301-redirects the old `/service-areas/santa-fe-nm/...` URLs to `/santa-fe-nm/...`.
+   `vercel.json` also permanently redirects (308) the old `/service-areas/santa-fe-nm/...` URLs, with or without a trailing slash, to `/santa-fe-nm/...`.
 2. Form submissions go to the serverless function `api/lead.js`, which emails each lead through [Resend](https://resend.com).
    In **Project → Settings → Environment Variables** (Production), add:
 
