@@ -17,8 +17,9 @@ shared partials, one config file for business details, and a Vercel serverless f
 | `/free-estimate/` | Booking form |
 | `/service-areas/` | Santa Fe, Santa Fe County, Los Alamos County, Española & Pojoaque, Glorieta & Pecos (each area has an `id` anchor) |
 | `/reviews/`, `/about/`, `/faq/`, `/financing/`, `/contact/`, `/thank-you/` | |
+| `/los-alamos-nm/` | `src/pages/los-alamos-nm.html`: Los Alamos area page (its own hub, so White Rock can live at `/los-alamos-nm/white-rock/` later) |
 | `/santa-fe-nm/` | `src/pages/santa-fe-nm.html`: Santa Fe hub page linking to the neighborhood pages |
-| `/santa-fe-nm/historic-eastside/`, `/las-campanas/`, `/south-capitol/`, `/eldorado/`, `/tesuque/` | `src/pages/santa-fe-nm/*.html`: neighborhood pages with estimate form, local considerations, FAQ and nearby-area links |
+| `/santa-fe-nm/historic-eastside/`, `/las-campanas/`, `/south-capitol/`, `/eldorado/`, `/tesuque/`, `/rancho-viejo/`, `/agua-fria/` | `src/pages/santa-fe-nm/*.html`: neighborhood pages with estimate form, local considerations, FAQ and nearby-area links |
 
 ## Editing
 - **Business info & prices:** `site.config.json`. Every placeholder value lives here, so you can replace them all in one place.
