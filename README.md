@@ -34,6 +34,26 @@ shared partials, one config file for business details, and a Vercel serverless f
 - **Styles:** `assets/css/styles.css`. Colors are CSS variables at the top: lime plaster, adobe, earth ink, Santa Fe blue, night blue and a single chamisa-yellow accent. Headings use Marcellus, body text Source Sans 3. The recurring motif is the arch-topped, deep-set opening around illustrations.
 - **Images:** `assets/img/` holds hand-made SVGs (logo, favicon, window/door illustrations, icons). Swap in real project photos when you have them.
 
+## Service + area pages
+28 pages pair each service with each Santa Fe area, e.g. `/santa-fe-nm/eldorado/replacement-windows/`
+(`/santa-fe-nm/<service>/` for Santa Fe as a whole). Service slugs: `replacement-windows`, `doors`,
+`window-door-repair`, `energy-efficient-windows`, `historic-adobe-homes` (historic pages exist only for
+Santa Fe, the Historic Eastside, South Capitol and Tesuque).
+
+- **Every page is hand-written** in its own file under `src/pages/santa-fe-nm/`. There is no template: copy,
+  section layout, FAQs and closing call-to-action are unique per page.
+- A page joins the system with `combo: <area>/<service>` in its front matter. `src/combos.json` holds only the
+  names and URLs of services and areas; the build uses it to add:
+  - the **Service** JSON-LD (with `areaServed`), plus FAQPage and a BreadcrumbList of Home › Service › Service in Area
+  - sitemap entries with `lastmod` (build date) and `priority` 0.7
+  - related-page links: `<!-- @combo-nav -->` on combo pages, `<!-- @areas-for:<service> -->` on service pages,
+    `<!-- @services-in:<area> -->` on area pages (links only appear for pages that exist)
+- **Adding an area later** (e.g. Los Alamos): build its area page, add it to `src/combos.json`, then write each
+  combo page by hand.
+- `npm run check` builds the site and verifies unique titles, descriptions, H1s and FAQ questions; combo
+  descriptions of 150–160 characters including the phone number; required schema; self-canonicals; links; and
+  that no sentence is reused and page-to-page wording overlap stays low.
+
 ## Placeholders to replace before launch
 Search the repo for `PLACEHOLDER` to find every spot. In summary:
 
