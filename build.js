@@ -114,6 +114,60 @@ const pages = listPages(pagesDir).map((file) => {
   return { file, slug, url, ...parsePage(fs.readFileSync(path.join(pagesDir, file), 'utf8')) };
 });
 const byUrl = Object.fromEntries(pages.map((p) => [p.url, p]));
+
+// Service + area combination pages. Each page's copy is hand-written in its own file;
+// src/combos.json only holds names and URLs so the build can add the related-page links,
+// Service schema and sitemap entries. A page opts in with `combo: <area>/<service>`.
+const registry = JSON.parse(fs.readFileSync(path.join(SRC, 'combos.json'), 'utf8'));
+const comboUrl = (a, s) => `${registry.areas[a].page}${s}/`;
+const areaLabel = (a) => registry.areas[a].label || registry.areas[a].name;
+const combos = {}; // "area/service" -> page
+for (const p of pages) {
+  if (!p.meta.combo) continue;
+  const [a, s] = p.meta.combo.split('/');
+  if (!registry.areas[a] || !registry.services[s]) throw new Error(`${p.file}: unknown combo "${p.meta.combo}"`);
+  if (p.url !== comboUrl(a, s)) throw new Error(`${p.file}: combo ${p.meta.combo} must live at ${comboUrl(a, s)}`);
+  combos[p.meta.combo] = p;
+}
+const areaKeys = Object.keys(registry.areas);
+const serviceKeys = Object.keys(registry.services);
+const li = (href, text) => `<li><a href="${href}">${text}</a></li>`;
+
+// <!-- @combo-nav --> on a combo page: parent service, parent area, other services here, this service elsewhere
+function comboNavHtml(a, s) {
+  const svc = registry.services[s];
+  const here = serviceKeys.filter((k) => k !== s && combos[`${a}/${k}`]);
+  const elsewhere = areaKeys.filter((k) => k !== a && combos[`${k}/${s}`]);
+  return `<section class="section section--white combo-nav-section">
+  <div class="container combo-nav">
+    <div><h2 class="h3">Keep exploring</h2><ul>${li(svc.page, `All about ${svc.short}`)}${li(registry.areas[a].page, `${areaLabel(a)} service area`)}${li('/free-estimate/', 'Book a free in-home estimate')}</ul></div>
+    ${here.length ? `<div><h2 class="h3">More services in ${areaLabel(a)}</h2><ul>${here.map((k) => li(comboUrl(a, k), registry.services[k].name)).join('')}</ul></div>` : ''}
+    ${elsewhere.length ? `<div><h2 class="h3">${svc.name} nearby</h2><ul>${elsewhere.map((k) => li(comboUrl(k, s), areaLabel(k))).join('')}</ul></div>` : ''}
+  </div>
+</section>`;
+}
+// <!-- @areas-for:<service> --> on a service page
+function areasForHtml(s) {
+  const list = areaKeys.filter((k) => combos[`${k}/${s}`]);
+  if (!list.length) return '';
+  return `<section class="section section--white"><div class="container"><div class="section-head"><h2>Where we offer ${registry.services[s].short}</h2></div><ul class="area-chips">${list.map((k) => li(comboUrl(k, s), areaLabel(k))).join('')}</ul></div></section>`;
+}
+// <!-- @services-in:<area> --> on an area page
+function servicesInHtml(a) {
+  const list = serviceKeys.filter((k) => combos[`${a}/${k}`]);
+  if (!list.length) return '';
+  return `<section class="section section--white"><div class="container"><div class="section-head"><h2>Services available in ${areaLabel(a)}</h2></div><ul class="area-chips">${list.map((k) => li(comboUrl(a, k), registry.services[k].name)).join('')}</ul></div></section>`;
+}
+function expandMarkers(body, meta) {
+  return body
+    .replace(/<!--\s*@combo-nav\s*-->/g, () => {
+      if (!meta.combo) throw new Error('@combo-nav used on a page without combo:');
+      const [a, s] = meta.combo.split('/');
+      return comboNavHtml(a, s);
+    })
+    .replace(/<!--\s*@areas-for:([\w-]+)\s*-->/g, (m, s) => areasForHtml(s))
+    .replace(/<!--\s*@services-in:([\w-]+)\s*-->/g, (m, a) => servicesInHtml(a));
+}
 const crumbName = (p) => fill(p.meta.crumb || p.meta.title || p.slug, vars);
 
 // Home → each parent page that exists → this page
@@ -127,6 +181,14 @@ function trail(url) {
   return out;
 }
 
+// Schema breadcrumbs: combo pages use Home > [Service] > [Service in Area]; everything else follows the URL
+function schemaTrail(url, meta) {
+  if (!meta.combo) return trail(url);
+  const [a, s] = meta.combo.split('/');
+  const svc = registry.services[s];
+  return [{ name: 'Home', url: '/' }, { name: crumbName(byUrl[svc.page]), url: svc.page }, { name: `${svc.name} in ${areaLabel(a)}`, url }];
+}
+
 // <!-- @breadcrumbs --> renders the trail as a visible nav
 function breadcrumbsHtml(url) {
   const t = trail(url);
@@ -138,7 +200,7 @@ function breadcrumbsHtml(url) {
 for (const { file, slug, url, meta, body } of pages) {
   const canonical = base + url;
 
-  const content = fill(include(body.replace(/<!--\s*@breadcrumbs\s*-->/g, breadcrumbsHtml(url))), vars);
+  const content = fill(include(expandMarkers(body, meta).replace(/<!--\s*@breadcrumbs\s*-->/g, breadcrumbsHtml(url))), vars);
 
   // Structured data: business on every page, breadcrumbs on inner pages, FAQPage where asked.
   const schemas = [business];
@@ -146,7 +208,20 @@ for (const { file, slug, url, meta, body } of pages) {
     schemas.push({
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
-      itemListElement: trail(url).map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: base + c.url })),
+      itemListElement: schemaTrail(url, meta).map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: base + c.url })),
+    });
+  }
+  if (meta.combo) {
+    const [a, s] = meta.combo.split('/');
+    const area = registry.areas[a];
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: `${registry.services[s].name} in ${areaLabel(a)}`,
+      serviceType: registry.services[s].name,
+      url: canonical,
+      areaServed: { '@type': area.type, name: area.place },
+      provider: { '@type': 'HomeAndConstructionBusiness', name: config.name, url: base + '/', telephone: config.phone },
     });
   }
   if (meta.schema === 'faq') {
@@ -189,7 +264,7 @@ for (const { file, slug, url, meta, body } of pages) {
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, 'index.html'), html);
   pageCount++;
-  if (meta.robots !== 'noindex') urls.push(url);
+  if (meta.robots !== 'noindex') urls.push({ url, combo: Boolean(meta.combo) });
 }
 
 if (unresolved.length) {
@@ -197,13 +272,14 @@ if (unresolved.length) {
   process.exit(1);
 }
 
-// sitemap + robots
+// sitemap + robots (combo pages get lastmod = build date and priority 0.7)
+const today = new Date().toISOString().slice(0, 10);
 fs.writeFileSync(
   path.join(DIST, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls
-    .map((u) => `  <url><loc>${base}${u}</loc></url>`)
+    .map(({ url: u, combo }) => `  <url><loc>${base}${u}</loc>${combo ? `<lastmod>${today}</lastmod><priority>0.7</priority>` : ''}</url>`)
     .join('\n')}\n</urlset>\n`
 );
 fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${base}/sitemap.xml\n`);
 
-console.log(`Built ${pageCount} pages (${urls.length} in sitemap) → dist/`);
+console.log(`Built ${pageCount} pages (${urls.length} in sitemap, ${Object.keys(combos).length} service+area combos) → dist/`);

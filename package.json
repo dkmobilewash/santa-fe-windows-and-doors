@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node build.js",
     "start": "node build.js && npx --yes serve dist -l 3000",
-    "test": "node --test"
+    "test": "node --test",
+    "check": "node build.js && node scripts/check-content.js"
   }
 }
