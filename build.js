@@ -3,6 +3,7 @@
 // from site.config.json, and writes clean URLs to dist/ (e.g. dist/about/index.html).
 const fs = require('fs');
 const path = require('path');
+const { execFileSync } = require('child_process');
 
 const ROOT = __dirname;
 const SRC = path.join(ROOT, 'src');
@@ -70,11 +71,13 @@ const base = config.domain.replace(/\/$/, '');
 const business = {
   '@context': 'https://schema.org',
   '@type': 'HomeAndConstructionBusiness',
+  '@id': base + '/#business',
   name: config.name,
   url: base + '/',
   telephone: config.phone,
   email: config.email,
   logo: base + '/assets/img/logo.svg',
+  image: base + '/assets/img/og-image.jpg',
   address: {
     '@type': 'PostalAddress',
     streetAddress: config.address,
@@ -83,8 +86,12 @@ const business = {
     postalCode: config.zip,
     addressCountry: 'US',
   },
+  geo: { '@type': 'GeoCoordinates', latitude: config.geo.latitude, longitude: config.geo.longitude },
+  hasMap: config.googleMapsUrl,
   areaServed: config.areaServed.map((name) => ({ '@type': 'City', name })),
 };
+// Social and directory profiles (Facebook, Yelp, BBB...), once they exist.
+if (config.sameAs.length) business.sameAs = config.sameAs;
 // Only published once real hours are set in site.config.json.
 if (config.openingHours) business.openingHours = config.openingHours;
 
@@ -108,9 +115,10 @@ function listPages(dir, prefix = '') {
   );
 }
 
+// src/pages/404.html is special: it becomes dist/404.html, which Vercel serves for any missing URL.
 const pages = listPages(pagesDir).map((file) => {
   const slug = file.replace(/\.html$/, '').replace(/(^|\/)index$/, '');
-  const url = slug ? `/${slug}/` : '/';
+  const url = slug === '404' ? '/404.html' : slug ? `/${slug}/` : '/';
   return { file, slug, url, ...parsePage(fs.readFileSync(path.join(pagesDir, file), 'utf8')) };
 });
 const byUrl = Object.fromEntries(pages.map((p) => [p.url, p]));
@@ -204,6 +212,7 @@ for (const { file, slug, url, meta, body } of pages) {
 
   // Structured data: business on every page, breadcrumbs on inner pages, FAQPage where asked.
   const schemas = [business];
+  const notFound = url === '/404.html';
   if (url !== '/' && meta.robots !== 'noindex') {
     schemas.push({
       '@context': 'https://schema.org',
@@ -221,7 +230,7 @@ for (const { file, slug, url, meta, body } of pages) {
       serviceType: registry.services[s].name,
       url: canonical,
       areaServed: { '@type': area.type, name: area.place },
-      provider: { '@type': 'HomeAndConstructionBusiness', name: config.name, url: base + '/', telephone: config.phone },
+      provider: { '@type': 'HomeAndConstructionBusiness', '@id': business['@id'], name: config.name, url: base + '/', telephone: config.phone },
     });
   }
   if (meta.schema === 'faq') {
@@ -248,6 +257,7 @@ for (const { file, slug, url, meta, body } of pages) {
     .replace('{{> footer}}', partials.footer)
     .replace('{{> schema}}', schemas.map(jsonLd).join('\n  '))
     .replace('{{> robots}}', meta.robots ? `<meta name="robots" content="${meta.robots}">` : '')
+    .replace('{{> canonical}}', notFound ? '' : '<link rel="canonical" href="{{canonical}}">')
     .replace('{{> content}}', content);
 
   html = fill(html, {
@@ -260,11 +270,15 @@ for (const { file, slug, url, meta, body } of pages) {
   const left = html.match(/\{\{[^}]*\}\}/g);
   if (left) unresolved.push(`${file}: ${[...new Set(left)].join(', ')}`);
 
+  pageCount++;
+  if (notFound) {
+    fs.writeFileSync(path.join(DIST, '404.html'), html);
+    continue;
+  }
   const outDir = slug ? path.join(DIST, slug) : DIST;
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, 'index.html'), html);
-  pageCount++;
-  if (meta.robots !== 'noindex') urls.push({ url, combo: Boolean(meta.combo) });
+  if (meta.robots !== 'noindex') urls.push({ url, file, combo: Boolean(meta.combo) });
 }
 
 if (unresolved.length) {
@@ -272,13 +286,37 @@ if (unresolved.length) {
   process.exit(1);
 }
 
-// sitemap + robots (combo pages get lastmod = build date and priority 0.7)
+// sitemap + robots. lastmod is the date of the last commit that touched the page's source file
+// (build date if git history isn't available); combo pages also get priority 0.7.
 const today = new Date().toISOString().slice(0, 10);
+function lastmod(file) {
+  try {
+    const d = execFileSync('git', ['log', '-1', '--format=%cs', '--', path.join('src/pages', file)], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    return d || today;
+  } catch {
+    return today;
+  }
+}
 fs.writeFileSync(
   path.join(DIST, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls
-    .map(({ url: u, combo }) => `  <url><loc>${base}${u}</loc>${combo ? `<lastmod>${today}</lastmod><priority>0.7</priority>` : ''}</url>`)
+    .map(({ url: u, file, combo }) => `  <url><loc>${base}${u}</loc><lastmod>${lastmod(file)}</lastmod>${combo ? '<priority>0.7</priority>' : ''}</url>`)
     .join('\n')}\n</urlset>\n`
+);
+fs.writeFileSync(
+  path.join(DIST, 'site.webmanifest'),
+  JSON.stringify({
+    name: config.name,
+    short_name: config.shortName,
+    start_url: '/',
+    display: 'browser',
+    background_color: '#faf8f4',
+    theme_color: '#12284a',
+    icons: [
+      { src: '/assets/img/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { src: '/assets/img/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+  }, null, 2) + '\n'
 );
 fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${base}/sitemap.xml\n`);
 

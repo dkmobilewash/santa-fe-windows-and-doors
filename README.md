@@ -17,6 +17,7 @@ shared partials, one config file for business details, and a Vercel serverless f
 | `/free-estimate/` | Booking form |
 | `/service-areas/` | Santa Fe, Santa Fe County, Los Alamos County, Española & Pojoaque, Glorieta & Pecos (each area has an `id` anchor) |
 | `/reviews/`, `/about/`, `/faq/`, `/financing/`, `/contact/`, `/thank-you/` | |
+| any missing URL | `src/pages/404.html` → `dist/404.html`: branded "page not found" page (noindex, no canonical) that Vercel serves with a 404 status |
 | `/los-alamos-nm/` | `src/pages/los-alamos-nm.html`: Los Alamos area page (its own hub, so White Rock can live at `/los-alamos-nm/white-rock/` later) |
 | `/santa-fe-nm/` | `src/pages/santa-fe-nm.html`: Santa Fe hub page linking to the neighborhood pages |
 | `/santa-fe-nm/historic-eastside/`, `/las-campanas/`, `/south-capitol/`, `/eldorado/`, `/tesuque/`, `/rancho-viejo/`, `/agua-fria/` | `src/pages/santa-fe-nm/*.html`: neighborhood pages with estimate form, local considerations, FAQ and nearby-area links |
@@ -30,8 +31,14 @@ shared partials, one config file for business details, and a Vercel serverless f
   - `crumb:` → the page name in breadcrumbs. Breadcrumbs follow the URL (Home › Service Areas › Santa Fe, NM › Eldorado) in the schema, and `<!-- @breadcrumbs -->` shows them on the page
   - `schema: faq` → builds FAQPage schema from the page's `<details><summary>` questions
   - `robots: noindex` → hides the page from search and the sitemap (used on `/thank-you/`)
-- **Structured data:** `build.js` generates `HomeAndConstructionBusiness` JSON-LD from `site.config.json` (address, phone, `areaServed`).
-  `openingHours` is only published once you fill it in (e.g. `"Mo-Fr 08:00-17:00"`).
+- **Structured data:** `build.js` generates `HomeAndConstructionBusiness` JSON-LD from `site.config.json` (address, phone, `geo` coordinates,
+  `googleMapsUrl` → `hasMap`, `areaServed`). The `geo` and `googleMapsUrl` values come from the Google Business Profile listing.
+  `openingHours` is only published once you fill it in (e.g. `"Mo-Fr 08:00-17:00"`), and `sameAs` once you add profile URLs
+  (Facebook, Yelp, BBB, Houzz...) to the `sameAs` list.
+- **Sharing & icons:** every page has Open Graph and Twitter card tags using `assets/img/og-image.jpg` (1200×630).
+  `apple-touch-icon.png`, `icon-192.png` and `icon-512.png` (plus the generated `/site.webmanifest`) cover phones and home screens.
+  Replace `og-image.jpg` with a real project photo at the same size when you have one.
+- **Sitemap:** each URL's `lastmod` is the date of the last commit that changed its source file.
 - **Styles:** `assets/css/styles.css`. Colors are CSS variables at the top: lime plaster, adobe, earth ink, Santa Fe blue, night blue and a single chamisa-yellow accent. Headings use Marcellus, body text Source Sans 3. The recurring motif is the arch-topped, deep-set opening around illustrations.
 - **Images:** `assets/img/` holds hand-made SVGs (logo, favicon, window/door illustrations, icons). Swap in real project photos when you have them.
 
