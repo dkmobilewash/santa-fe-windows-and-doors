@@ -1,18 +1,87 @@
 {
-  "_note": "Registry for service + area combination pages. Names and URLs only; every page's copy lives in its own file under src/pages/santa-fe-nm/. A combo page declares itself with `combo: <area>/<service>` in its front matter.",
+  "_note": "Registry for service + area combination pages. Names and URLs only; every page's copy lives in its own hand-written file under src/pages/ (at the area page's URL + service slug). A combo page declares itself with `combo: <area>/<service>` in its front matter.",
   "services": {
-    "replacement-windows": { "name": "Replacement Windows", "short": "replacement windows", "page": "/windows/" },
-    "doors": { "name": "Entry, Patio & French Doors", "short": "doors", "page": "/doors/" },
-    "window-door-repair": { "name": "Window & Door Repair", "short": "window & door repair", "page": "/window-door-repair/" },
-    "energy-efficient-windows": { "name": "Energy-Efficient Windows", "short": "energy-efficient windows", "page": "/energy-efficient-windows/" },
-    "historic-adobe-homes": { "name": "Historic & Adobe Home Windows", "short": "historic & adobe home windows", "page": "/historic-adobe-homes/" }
+    "replacement-windows": {
+      "name": "Replacement Windows",
+      "short": "replacement windows",
+      "page": "/windows/"
+    },
+    "doors": {
+      "name": "Entry, Patio & French Doors",
+      "short": "doors",
+      "page": "/doors/"
+    },
+    "window-door-repair": {
+      "name": "Window & Door Repair",
+      "short": "window & door repair",
+      "page": "/window-door-repair/"
+    },
+    "energy-efficient-windows": {
+      "name": "Energy-Efficient Windows",
+      "short": "energy-efficient windows",
+      "page": "/energy-efficient-windows/"
+    },
+    "historic-adobe-homes": {
+      "name": "Historic & Adobe Home Windows",
+      "short": "historic & adobe home windows",
+      "page": "/historic-adobe-homes/"
+    }
   },
   "areas": {
-    "santa-fe": { "name": "Santa Fe", "place": "Santa Fe, NM", "type": "City", "page": "/santa-fe-nm/" },
-    "historic-eastside": { "name": "the Historic Eastside", "label": "Historic Eastside", "place": "Eastside, Santa Fe, NM", "type": "Place", "page": "/santa-fe-nm/historic-eastside/" },
-    "south-capitol": { "name": "South Capitol", "place": "South Capitol, Santa Fe, NM", "type": "Place", "page": "/santa-fe-nm/south-capitol/" },
-    "tesuque": { "name": "Tesuque", "place": "Tesuque, NM", "type": "Place", "page": "/santa-fe-nm/tesuque/" },
-    "eldorado": { "name": "Eldorado", "place": "Eldorado at Santa Fe, NM", "type": "Place", "page": "/santa-fe-nm/eldorado/" },
-    "las-campanas": { "name": "Las Campanas", "place": "Las Campanas, Santa Fe, NM", "type": "Place", "page": "/santa-fe-nm/las-campanas/" }
+    "santa-fe": {
+      "name": "Santa Fe",
+      "place": "Santa Fe, NM",
+      "type": "City",
+      "page": "/santa-fe-nm/"
+    },
+    "historic-eastside": {
+      "name": "the Historic Eastside",
+      "label": "Historic Eastside",
+      "place": "Eastside, Santa Fe, NM",
+      "type": "Place",
+      "page": "/santa-fe-nm/historic-eastside/"
+    },
+    "south-capitol": {
+      "name": "South Capitol",
+      "place": "South Capitol, Santa Fe, NM",
+      "type": "Place",
+      "page": "/santa-fe-nm/south-capitol/"
+    },
+    "tesuque": {
+      "name": "Tesuque",
+      "place": "Tesuque, NM",
+      "type": "Place",
+      "page": "/santa-fe-nm/tesuque/"
+    },
+    "eldorado": {
+      "name": "Eldorado",
+      "place": "Eldorado at Santa Fe, NM",
+      "type": "Place",
+      "page": "/santa-fe-nm/eldorado/"
+    },
+    "las-campanas": {
+      "name": "Las Campanas",
+      "place": "Las Campanas, Santa Fe, NM",
+      "type": "Place",
+      "page": "/santa-fe-nm/las-campanas/"
+    },
+    "rancho-viejo": {
+      "name": "Rancho Viejo",
+      "place": "Rancho Viejo, Santa Fe, NM",
+      "type": "Place",
+      "page": "/santa-fe-nm/rancho-viejo/"
+    },
+    "agua-fria": {
+      "name": "Agua Fria",
+      "place": "Agua Fria, Santa Fe, NM",
+      "type": "Place",
+      "page": "/santa-fe-nm/agua-fria/"
+    },
+    "los-alamos": {
+      "name": "Los Alamos",
+      "place": "Los Alamos, NM",
+      "type": "City",
+      "page": "/los-alamos-nm/"
+    }
   }
 }
