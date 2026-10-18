@@ -1,6 +1,6 @@
 // Content and SEO checks for the built site. Run after `node build.js` (npm run check does both).
 // - unique <title>, meta description, <h1> and FAQ questions across every page
-// - self-referencing canonicals, no broken internal links or #anchors
+// - self-referencing canonicals, a share image on every page, no broken internal links or #anchors (404 page included)
 // - combo pages: 150-160 char description with the phone number, 3-5 FAQs, Service + FAQPage + BreadcrumbList schema
 // - combo pages: no sentence shared with any other page, and low word-sequence overlap between pages
 const fs = require('fs');
@@ -20,6 +20,7 @@ const files = [];
     else if (e.name === 'index.html') files.push(p);
   }
 })(DIST);
+files.push(path.join(DIST, '404.html'));
 
 const decode = (s) => s.replace(/&amp;/g, '&').replace(/&mdash;/g, '—').replace(/&ndash;/g, '–').replace(/&rsquo;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ').replace(/&[a-z]+;/g, ' ');
 const text = (html) => decode(html.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
@@ -27,7 +28,7 @@ const text = (html) => decode(html.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' '
 const pages = files.map((f) => {
   const html = fs.readFileSync(f, 'utf8');
   const rel = path.relative(DIST, path.dirname(f)).split(path.sep).join('/');
-  const url = rel ? `/${rel}/` : '/';
+  const url = path.basename(f) === '404.html' ? '/404.html' : rel ? `/${rel}/` : '/';
   const ld = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
   let main = (html.match(/<main id="main">([\s\S]*?)<\/main>/) || [, ''])[1]
     .replace(/<form[\s\S]*?<\/form>/g, ' ')
@@ -64,10 +65,11 @@ dupes('FAQ question', (p) => p.faqs);
 
 for (const p of pages) {
   if (!p.html.includes('name="robots" content="noindex"') && p.canonical !== base + p.url) errors.push(`${p.url}: canonical is ${p.canonical}`);
+  if (!p.html.includes(`<meta property="og:image" content="${base}/assets/img/og-image.jpg">`)) errors.push(`${p.url}: missing og:image`);
   for (const m of p.html.matchAll(/href="(\/[^"#]*)(#[^"]*)?"/g)) {
     const [, u, hash] = m;
     if (u.startsWith('/assets') || u.startsWith('/api')) continue;
-    const target = path.join(DIST, u, 'index.html');
+    const target = /\.\w+$/.test(u) ? path.join(DIST, u) : path.join(DIST, u, 'index.html');
     if (!fs.existsSync(target)) errors.push(`${p.url}: broken link ${u}`);
     else if (hash && !fs.readFileSync(target, 'utf8').includes(`id="${hash.slice(1)}"`)) errors.push(`${p.url}: missing anchor ${u}${hash}`);
   }

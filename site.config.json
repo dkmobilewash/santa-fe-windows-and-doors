@@ -21,6 +21,12 @@
   "city": "Santa Fe",
   "state": "NM",
   "zip": "87505",
+  "geo": {
+    "latitude": 35.6637265,
+    "longitude": -105.9608076
+  },
+  "googleMapsUrl": "https://www.google.com/maps?cid=7609544089972513223",
+  "sameAs": [],
   "hours": "Hours coming soon — call to schedule",
   "openingHours": "",
   "license": "NM License #000000",
