@@ -43,10 +43,12 @@ shared partials, one config file for business details, and a Vercel serverless f
 - **Images:** `assets/img/` holds hand-made SVGs (logo, favicon, window/door illustrations, icons). Swap in real project photos when you have them.
 
 ## Service + area pages
-28 pages pair each service with each Santa Fe area, e.g. `/santa-fe-nm/eldorado/replacement-windows/`
+37 pages pair each service with each Santa Fe area, e.g. `/santa-fe-nm/eldorado/replacement-windows/`
 (`/santa-fe-nm/<service>/` for Santa Fe as a whole). Service slugs: `replacement-windows`, `doors`,
 `window-door-repair`, `energy-efficient-windows`, `historic-adobe-homes` (historic pages exist only for
-Santa Fe, the Historic Eastside, South Capitol and Tesuque).
+Santa Fe, the Historic Eastside, South Capitol, Tesuque and Agua Fria). Areas with combo pages: Santa Fe,
+Historic Eastside, South Capitol, Tesuque, Eldorado, Las Campanas, Rancho Viejo and Agua Fria. Los Alamos has an
+area page but no combo pages yet.
 
 - **Every page is hand-written** in its own file under `src/pages/santa-fe-nm/`. There is no template: copy,
   section layout, FAQs and closing call-to-action are unique per page.
