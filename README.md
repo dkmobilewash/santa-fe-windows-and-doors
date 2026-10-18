@@ -68,7 +68,6 @@ Search the repo for `PLACEHOLDER` to find every spot. In summary:
 | What | Where |
 |---|---|
 | Email (`hello@santafewindowsanddoors.com`) | `site.config.json` (confirm the mailbox exists) |
-| Hours (`hours`, and `openingHours` for schema) | `site.config.json` |
 | NM contractor license (`NM License #000000`) | `site.config.json` |
 | Year founded (`20XX`, not shown on pages yet) | `site.config.json` |
 | Domain (`https://www.santafewindowsanddoors.com`) | `site.config.json` (used for canonical URLs, sitemap, schema) |
