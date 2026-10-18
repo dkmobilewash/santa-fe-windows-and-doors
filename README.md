@@ -67,7 +67,6 @@ Search the repo for `PLACEHOLDER` to find every spot. In summary:
 
 | What | Where |
 |---|---|
-| Phone (`(505) 555-0123`) and `phoneHref` | `site.config.json` |
 | Email (`hello@santafewindowsanddoors.com`) | `site.config.json` (confirm the mailbox exists) |
 | Hours (`hours`, and `openingHours` for schema) | `site.config.json` |
 | NM contractor license (`NM License #000000`) | `site.config.json` |
