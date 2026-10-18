@@ -1,8 +1,6 @@
 {
   "_note": "Business details used across the whole site. Fields listed in _placeholders are NOT real yet: replace them, then run `npm run build`.",
   "_placeholders": [
-    "phone",
-    "phoneHref",
     "email",
     "hours",
     "openingHours",
@@ -14,8 +12,8 @@
   "name": "Santa Fe Windows and Doors",
   "shortName": "SF Windows & Doors",
   "tagline": "Locally owned window and door replacement in Santa Fe, New Mexico",
-  "phone": "(505) 555-0123",
-  "phoneHref": "+15055550123",
+  "phone": "(505) 477-6620",
+  "phoneHref": "+15054776620",
   "email": "hello@santafewindowsanddoors.com",
   "address": "1570 Pacheco St, Suite D6",
   "city": "Santa Fe",
